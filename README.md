@@ -74,19 +74,21 @@ component-level causal effects, or statistical significance between agents.
 
 ## Repository status
 
-The report covers all three team models. The current `main` branch publishes
-one complete inference package.
+The three team models are stored in separate directories. Their READMEs
+describe the available files, dependencies, and training or evaluation entry
+points.
 
-| Path | Contents | Status |
+| Path | Contents | Documentation |
 | --- | --- | --- |
-| [`src/model_1/`](src/model_1/) | Siegfried source, checkpoint, dependencies, documentation, and verifier | Complete inference package |
-| [`src/model_2/`](src/model_2/) | `.gitkeep` only | No implementation committed |
-| [`src/model_3/`](src/model_3/) | `.gitkeep` only | No implementation committed |
-| [`src/opponent agents/`](src/opponent%20agents/) | External Bomberman agents and reference repositories | Separate from the three team models |
+| [`src/model_1/`](src/model_1/) | Siegfried inference code, trained checkpoint, dependencies, and verifier | [Siegfried README](src/model_1/README.md) |
+| [`src/model_2/`](src/model_2/) | DQFD_RE development agents, training and pre-training code, demonstrations, and training records | [DQFD_RE README](src/model_2/README.md) |
+| [`src/model_3/`](src/model_3/) | SEAT-Q variants, training and evaluation code, trained checkpoints, experiment records, and the game framework | [SEAT-Q README](src/model_3/README.md) |
+| [`src/opponent agents/`](src/opponent%20agents/) | External Bomberman agents and reference repositories | Documentation within each external project |
 
-Model 2 and Model 3 currently contain no Python source, checkpoint, dependency
-file, or model documentation. The external agents are development material and
-are not substitutes for the missing team-model packages.
+The directory numbering identifies the team packages: Model 1 is Siegfried,
+Model 2 is DQFD_RE, and Model 3 is SEAT-Q. SEAT-Q's internal `m2_*` version
+names are explained in its README. External opponents are stored separately
+from the team models.
 
 ## Published model: Siegfried
 
@@ -167,6 +169,39 @@ Supported stages are `task1`, `task2`, `task3a`, `task3b`, and `task4`. The
 agent uses `task4` when `M2_TRAINING_STAGE` is unset. `M2_MODEL_PATH` can point
 to another compatible checkpoint. Do not start this inference package with
 `--train 1`.
+
+## Run SEAT-Q
+
+The SEAT-Q package includes the game framework, its reported variants, and
+their training and evaluation scripts. Use Python 3.12 and run the following
+commands from the repository root to evaluate the retained League policy:
+
+```bash
+python3 -m venv .seat-q-venv
+source .seat-q-venv/bin/activate
+python -m pip install --requirement src/model_3/requirements.txt
+cd src/model_3
+SEAT_D3QN_VARIANT=m2_4_c3_v2 python main.py play \
+  --no-gui --agents seat_d3qn peaceful_agent coin_collector_agent rule_based_agent \
+  --scenario classic --n-rounds 10 --seed 10001
+```
+
+On Windows PowerShell:
+
+```powershell
+py -3.12 -m venv .seat-q-venv
+.\.seat-q-venv\Scripts\Activate.ps1
+python -m pip install --requirement .\src\model_3\requirements.txt
+Set-Location .\src\model_3
+$env:SEAT_D3QN_VARIANT = "m2_4_c3_v2"
+python .\main.py play --no-gui --agents seat_d3qn peaceful_agent coin_collector_agent rule_based_agent --scenario classic --n-rounds 10 --seed 10001
+```
+
+All SEAT-Q commands run from `src/model_3`, which contains its `main.py`.
+The [SEAT-Q README](src/model_3/README.md) maps the report's nine variants to
+their source directories and lists training, checkpoint selection, and full
+evaluation commands, together with the required source checkpoints and
+instructions for preparing a fresh training copy.
 
 ## Evidence boundary
 
